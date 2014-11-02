@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import eu.chainfire.libsuperuser.*;
 import me.ycdev.android.issue.utils.Constants;
-import me.ycdev.androidlib.utils.IoUtils;
+import me.ycdev.android.lib.common.utils.IoUtils;
 
 
 public class MainActivity extends ActionBarActivity {
