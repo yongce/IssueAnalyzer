@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">IssueAnalyzer</string>
+    <string name="action_settings">设置</string>
+
     <string name="dump_power_log">抓取耗电信息</string>
     <string name="dump_power_log_ongoing">正在抓取信息…</string>
-    <string name="action_settings">设置</string>
+
+    <string name="dump_traffic_stats_log">抓取流量统计信息</string>
+    <string name="dump_traffic_stats_log_ongoing">正在抓取信息…</string>
 </resources>

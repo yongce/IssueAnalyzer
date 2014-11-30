@@ -3,4 +3,4 @@ include ':libsuperuser'
 include ':androidLib'
 
 project(':libsuperuser').projectDir = file('submodules/libsuperuser/libsuperuser')
-project(':androidLib').projectDir = file('submodules/AndroidLib')
+project(':androidLib').projectDir = file('submodules/AndroidLib/lib')

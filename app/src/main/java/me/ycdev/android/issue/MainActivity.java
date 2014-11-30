@@ -1,21 +1,16 @@
 package me.ycdev.android.issue;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.*;
-import android.os.Process;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import java.io.File;
-import java.io.IOException;
-
-import eu.chainfire.libsuperuser.*;
-import me.ycdev.android.issue.utils.Constants;
-import me.ycdev.android.lib.common.utils.IoUtils;
+import me.ycdev.android.issue.logger.PowerLogger;
+import me.ycdev.android.issue.logger.TrafficStatsLogger;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -32,6 +27,14 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 dumpPowerLog();
+            }
+        });
+
+        Button trafficStatsLogBtn = (Button) findViewById(R.id.dump_traffic_stats_log);
+        trafficStatsLogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dumpTrafficLog();
             }
         });
     }
@@ -62,48 +65,18 @@ public class MainActivity extends ActionBarActivity {
         new MyTask(getString(R.string.dump_power_log_ongoing), new Runnable() {
             @Override
             public void run() {
-                doDumpPowerLog();
+                new PowerLogger(getApplication()).dumpLog();
             }
         }).execute();
     }
 
-    private void doDumpPowerLog() {
-        final String dataPowerDir = getDir(Constants.DATA_DIR_POWER, Context.MODE_PRIVATE).getAbsolutePath();
-        final File sdRoot = Environment.getExternalStorageDirectory();
-        final File sdcardPowerDir = new File(sdRoot, Constants.EXTERNAL_STORAGE_DIR_POWER);
-        sdcardPowerDir.mkdirs();
-
-        // first, save the info to /data
-        String batteryStatsFile = new File(dataPowerDir, "batterystats").getAbsolutePath();
-        String batteryInfoFile = new File(dataPowerDir, "batteryinfo").getAbsolutePath();
-        String powerFile = new File(dataPowerDir, "power").getAbsolutePath();
-        String deviceFile = new File(dataPowerDir, "device").getAbsolutePath();
-        String serviceFile = new File(dataPowerDir, "service").getAbsolutePath();
-        int myUid = Process.myUid();
-        String[] cmds = new String[] {
-                "service list > " + serviceFile,
-                "chown " + myUid + ":" + myUid + " " + serviceFile,
-                "dumpsys batterystats > " + batteryStatsFile,
-                "chown " + myUid + ":" + myUid + " " + batteryStatsFile,
-                "dumpsys batteryinfo > " + batteryInfoFile,
-                "chown " + myUid + ":" + myUid + " " + batteryInfoFile,
-                "dumpsys power > " + powerFile,
-                "chown " + myUid + ":" + myUid + " " + powerFile,
-                "getprop > " + deviceFile,
-                "chown " + myUid + ":" + myUid + " " + deviceFile,
-        };
-        Shell.SU.run(cmds);
-
-        // second, copy the files to /sdcard
-        try {
-            IoUtils.copyFile(batteryStatsFile, new File(sdcardPowerDir, "batterystats").getAbsolutePath());
-            IoUtils.copyFile(batteryInfoFile, new File(sdcardPowerDir, "batteryinfo").getAbsolutePath());
-            IoUtils.copyFile(powerFile, new File(sdcardPowerDir, "power").getAbsolutePath());
-            IoUtils.copyFile(deviceFile, new File(sdcardPowerDir, "device").getAbsolutePath());
-            IoUtils.copyFile(serviceFile, new File(sdcardPowerDir, "service").getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void dumpTrafficLog() {
+        new MyTask(getString(R.string.dump_traffic_stats_log_ongoing), new Runnable() {
+            @Override
+            public void run() {
+                new TrafficStatsLogger(getApplication()).dumpLog();
+            }
+        }).execute();
     }
 
     private class MyTask extends AsyncTask<Void, Void, Void> {
