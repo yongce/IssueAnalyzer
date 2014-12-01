@@ -2,6 +2,7 @@ package me.ycdev.android.issue;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.widget.Button;
 
 import me.ycdev.android.issue.logger.PowerLogger;
 import me.ycdev.android.issue.logger.TrafficStatsLogger;
+import me.ycdev.android.issue.logger.TrafficTagsLogger;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -31,10 +33,23 @@ public class MainActivity extends ActionBarActivity {
         });
 
         Button trafficStatsLogBtn = (Button) findViewById(R.id.dump_traffic_stats_log);
-        trafficStatsLogBtn.setOnClickListener(new View.OnClickListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            trafficStatsLogBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dumpTrafficStatsLog();
+                }
+            });
+            trafficStatsLogBtn.setVisibility(View.VISIBLE);
+        } else {
+            trafficStatsLogBtn.setVisibility(View.GONE);
+        }
+
+        Button trafficTagsLogBtn = (Button) findViewById(R.id.dump_traffic_tags_log);
+        trafficTagsLogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dumpTrafficLog();
+                dumpTrafficTagsLog();
             }
         });
     }
@@ -70,11 +85,20 @@ public class MainActivity extends ActionBarActivity {
         }).execute();
     }
 
-    private void dumpTrafficLog() {
+    private void dumpTrafficStatsLog() {
         new MyTask(getString(R.string.dump_traffic_stats_log_ongoing), new Runnable() {
             @Override
             public void run() {
                 new TrafficStatsLogger(getApplication()).dumpLog();
+            }
+        }).execute();
+    }
+
+    private void dumpTrafficTagsLog() {
+        new MyTask(getString(R.string.dump_traffic_tags_log_ongoing), new Runnable() {
+            @Override
+            public void run() {
+                new TrafficTagsLogger(getApplication()).dumpLog();
             }
         }).execute();
     }

@@ -9,4 +9,7 @@
 
     <string name="dump_traffic_stats_log">Dump traffic stats logs</string>
     <string name="dump_traffic_stats_log_ongoing">Dumping info, please wait…</string>
+
+    <string name="dump_traffic_tags_log">Dump traffic tags logs</string>
+    <string name="dump_traffic_tags_log_ongoing">Dumping info, please wait…</string>
 </resources>
