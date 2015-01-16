@@ -22,7 +22,7 @@ public abstract class LoggerBase {
         mAppContext = cxt.getApplicationContext();
     }
 
-    final public void dumpLog() {
+    final public String dumpLog() {
         // create dirs if needed
         String logsDirName = getLogsDirName();
         File dataLogsDir = mAppContext.getDir(logsDirName, Context.MODE_PRIVATE);
@@ -60,6 +60,7 @@ public abstract class LoggerBase {
 
         // dump specific logs
         doDumpLog(dataLogsDir, sdcardLogsDir);
+        return sdcardLogsDir.getAbsolutePath();
     }
 
     protected abstract String getLogsDirName();

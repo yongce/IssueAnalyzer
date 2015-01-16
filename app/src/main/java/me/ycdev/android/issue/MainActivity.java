@@ -9,7 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import me.ycdev.android.issue.logger.LoggerBase;
 import me.ycdev.android.issue.logger.PowerLogger;
 import me.ycdev.android.issue.logger.TrafficStatsLogger;
 import me.ycdev.android.issue.logger.TrafficTagsLogger;
@@ -77,40 +79,25 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void dumpPowerLog() {
-        new MyTask(getString(R.string.dump_power_log_ongoing), new Runnable() {
-            @Override
-            public void run() {
-                new PowerLogger(getApplication()).dumpLog();
-            }
-        }).execute();
+        new MyTask(getString(R.string.dump_log_ongoing), new PowerLogger(this)).execute();
     }
 
     private void dumpTrafficStatsLog() {
-        new MyTask(getString(R.string.dump_traffic_stats_log_ongoing), new Runnable() {
-            @Override
-            public void run() {
-                new TrafficStatsLogger(getApplication()).dumpLog();
-            }
-        }).execute();
+        new MyTask(getString(R.string.dump_log_ongoing), new TrafficStatsLogger(this)).execute();
     }
 
     private void dumpTrafficTagsLog() {
-        new MyTask(getString(R.string.dump_traffic_tags_log_ongoing), new Runnable() {
-            @Override
-            public void run() {
-                new TrafficTagsLogger(getApplication()).dumpLog();
-            }
-        }).execute();
+        new MyTask(getString(R.string.dump_log_ongoing), new TrafficTagsLogger(this)).execute();
     }
 
-    private class MyTask extends AsyncTask<Void, Void, Void> {
+    private class MyTask extends AsyncTask<Void, Void, String> {
         private String mTips;
-        private Runnable mTargetTask;
+        private LoggerBase mLogger;
         private ProgressDialog mDialog;
 
-        public MyTask(String tips, Runnable task) {
+        public MyTask(String tips, LoggerBase logger) {
             mTips = tips;
-            mTargetTask = task;
+            mLogger = logger;
         }
 
         @Override
@@ -122,13 +109,14 @@ public class MainActivity extends ActionBarActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            mTargetTask.run();
-            return null;
+        protected String doInBackground(Void... params) {
+            return mLogger.dumpLog();
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(String result) {
+            String tips = getString(R.string.dump_toast_logs_dir, result);
+            Toast.makeText(MainActivity.this, tips, Toast.LENGTH_LONG).show();
             mDialog.dismiss();
         }
     }
